@@ -37,8 +37,12 @@ function isFiletypeSupported(type,supportedtypes){
     return supportedtypes.includes(type);
 }
 
-async function uploadFileToCloudinary(file,folder) {       //make function async , because we want to upload file to cloud or database
+async function uploadFileToCloudinary(file,folder,quality) {       //make function async , because we want to upload file to cloud or database
     const options = {folder};
+    if (quality) {
+        options.quality = quality;
+    }
+     options.resource_type = "auto"
     return  await cloudinary.uploader.upload(file.tempFilePath,options);
 }
 
@@ -162,7 +166,53 @@ module.exports = videoupload;
 
 const imagesizereducer = async (req,res)=>{
     try{
+        const {name,tags,email} = req.body;
+        console.log(name,tags,email);
         
+
+        const imagefile = req.files.imagefile;
+        console.log(imagefile);
+        
+
+        // validation
+        const supportedtypes = ["jpg", "png", "gif","webp","jpeg"];
+
+        // to identify our file type
+        const filetype = imagefile.name.split('.')[1].toLowerCase();
+        console.log("filetype", filetype);
+        
+        
+        if(!isFiletypeSupported(filetype,supportedtypes)){
+            return res.status(400).json({
+                success : false,
+                message : "file type not supported"
+            })
+        }
+
+        // file is supported
+        // upload to cloudinary
+        console.log("uploading to cloudinary");
+        
+        // HW - Decrease size by height and width 
+        const fileupload = await uploadFileToCloudinary(imagefile,"yash", 50);   // (file,"cloudinary_folder_name")
+        console.log(fileupload);
+
+        
+        
+
+        // db me entry save karni hai ..
+        // const filedata = await File.create({
+        //     name,
+        //     imageurl: fileupload.secure_url,
+        //     tags,
+        //     email
+        // });
+
+        res.status(200).json({
+            success : true,
+            message : "image uploaded successfully",
+            
+        })
     }
     catch(err){
         res.status(500).json({
