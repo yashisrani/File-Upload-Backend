@@ -36,18 +36,30 @@ module.exports = localfileupload;
 function isFiletypeSupported(type,supportedtypes){
     return supportedtypes.includes(type);
 }
+
+async function uploadFileToCloudinary(file,folder) {       //make function async , because we want to upload file to cloud or database
+    const options = {folder};
+    return  await cloudinary.uploader.upload(file.tempFilePath,options);
+}
+
 const imageupload = async (req,res)=>{
     try{
         // data fetch
-        const {name,tags,enmail } = req.body;
-        const file = req.files.imagefile;
+        const {name,tags,email} = req.body;
+        // console.log(name,tags,email);
+        
 
+        const imagefile = req.files.imagefile;
+        console.log(imagefile);
+        
 
         // validation
-        const supportedtypes = ["jpg", "png", "gif","webp"];
+        const supportedtypes = ["jpg", "png", "gif","webp","jpeg"];
 
-        // file type
-        const filetype = file.name.split('.')[1].toLowerCase();
+        // to identify our file type
+        const filetype = imagefile.name.split('.')[1].toLowerCase();
+        // console.log("filetype", filetype);
+        
         
         if(!isFiletypeSupported(filetype,supportedtypes)){
             return res.status(400).json({
@@ -56,8 +68,29 @@ const imageupload = async (req,res)=>{
             })
         }
 
+        // file is supported
         // upload to cloudinary
-        const fileupload = await uploadFileToCloudinary(file,imagefile);
+        console.log("uploading to cloudinary");
+        
+        const fileupload = await uploadFileToCloudinary(imagefile,"yash");   // (file,"cloudinary_folder_name")
+        console.log(fileupload);
+
+        
+        
+
+        // db me entry save karni hai ..
+        // const filedata = await File.create({
+        //     name,
+        //     imageurl: fileupload.secure_url,
+        //     tags,
+        //     email
+        // });
+
+        res.status(200).json({
+            success : true,
+            message : "image uploaded successfully",
+            
+        })
     }
     catch(err){
         res.status(500).json({
