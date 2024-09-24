@@ -101,3 +101,75 @@ const imageupload = async (req,res)=>{
 }
 
 module.exports = imageupload;
+
+function isFiletypeSupported(type,supportedtypes){
+    return supportedtypes.includes(type);
+}
+
+async function uploadFileToCloudinary(file,folder) {       //make function async , because we want to upload file to cloud or database
+    const options = {folder};
+    options.resource_type = "auto";
+    return  await cloudinary.uploader.upload(file.tempFilePath,options);
+}
+
+const videoupload = async(req,res)=>{
+    try{
+        const {name,tags,email} = req.body;
+
+        const videofile = req.files.videofile;
+
+        // validation
+        const supportedtypes= ["mp4", "mp3", "mov"];
+
+        const filetype = videofile.name.split('.')[1].toLowerCase();
+        console.log(filetype);
+        
+
+        if(!isFiletypeSupported(filetype,supportedtypes)){
+            return res.status(400).json({
+                success : false,
+                message : "file type not supported"
+            })
+        }
+
+        // upload to cloudinary
+        console.log("uploading to cloudinary");
+        console.log("yaa baby");
+        
+        const fileupload = await uploadFileToCloudinary(videofile, "yash");   // (file,"cloudinary_folder_name")
+        console.log(fileupload);
+
+
+        res.status(200).json({
+            success : true,
+            message : "video uploaded successfully",
+            
+        })
+        
+    }
+
+  
+
+    catch(err){
+        res.status(500).json({
+            success : false,
+            message : "error while uploading video"
+        })
+    }
+}
+
+module.exports = videoupload;
+
+const imagesizereducer = async (req,res)=>{
+    try{
+        
+    }
+    catch(err){
+        res.status(500).json({
+            success : false,
+            message : "error while resizing image"
+        })
+    }
+}
+
+module.exports = imagesizereducer;
