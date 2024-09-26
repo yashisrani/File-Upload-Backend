@@ -83,12 +83,12 @@ const imageupload = async (req,res)=>{
         
 
         // db me entry save karni hai ..
-        // const filedata = await File.create({
-        //     name,
-        //     imageurl: fileupload.secure_url,
-        //     tags,
-        //     email
-        // });
+        const imageFile = await File.create({
+            name,
+            imageurl: fileupload.secure_url,
+            tags,
+            email
+        });
 
         res.status(200).json({
             success : true,
@@ -143,6 +143,13 @@ const videoupload = async(req,res)=>{
         const fileupload = await uploadFileToCloudinary(videofile, "yash");   // (file,"cloudinary_folder_name")
         console.log(fileupload);
 
+        // db me entry save karni hai ..
+        const videoFile = await File.create({
+            name,
+            imageurl: fileupload.secure_url,
+            tags,
+            email
+        });
 
         res.status(200).json({
             success : true,
@@ -201,12 +208,12 @@ const imagesizereducer = async (req,res)=>{
         
 
         // db me entry save karni hai ..
-        // const filedata = await File.create({
-        //     name,
-        //     imageurl: fileupload.secure_url,
-        //     tags,
-        //     email
-        // });
+        const imagereducefile = await File.create({
+            name,
+            imageurl: fileupload.secure_url,
+            tags,
+            email
+        });
 
         res.status(200).json({
             success : true,
